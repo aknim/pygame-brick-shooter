@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 
 # Initialize pygame
 pygame.init()
@@ -42,6 +43,9 @@ class Paddle:
 class Ball:
     def __init__(self):
         self.radius = 10
+        self.reset_position()
+
+    def reset_position(self):
         self.x = width // 2
         self.y = height // 2
         self.x_speed = 4 * random.choice([1, -1])
@@ -79,13 +83,33 @@ def ball_brick_collision(ball, bricks):
                 return True
     return False
 
+def create_level(level):
+    layouts = [
+        # Level 1: Simple 3x5 grid
+        [(x * 70 + 50, y * 40 + 50) for y in range(3) for x in range(5)],
+        # Level 2: 4x6 grid
+        [(x * 70 + 50, y * 40 + 50) for y in range(4) for x in range(6)],
+        # Level 3: 5x7 grid
+        [(x * 70 + 50, y * 40 + 50) for y in range(5) for x in range(7)]
+    ]
+    return [Brick(x,y) for (x, y) in layouts[level % len(layouts)]]
+
+# Display level transition
+def show_level_start(level):
+    font = pygame.font.SysFont("Arial", 40)
+    level_text = font.render(f"Level {level + 1}", True, BLACK)
+    screen.blit(level_text, (width // 2 - 100, height // 2 - 20))
+    pygame.display.update()
+    time.sleep(1) # Pause for 1 second
+
 def main():
     paddle = Paddle()
     ball = Ball()
-    bricks = [Brick(x * 70 + 50, y * 40 + 50) for y in range(5) for x in range(10)]
+    level = 0
+    bricks = create_level(level)
 
     score = 0 # Initialize
-
+    
     running = True
     while running:
         screen.fill(WHITE)
@@ -118,6 +142,13 @@ def main():
             ball.y_speed = -ball.y_speed
             score += 10
 
+        # Check if all bricks are cleared, then move to the next level
+        if all(brick.hit for brick in bricks):
+            level += 1
+            bricks = create_level(level)
+            ball.reset_position() 
+            show_level_start(level) # Show level start message
+
         # Draw game objects
         paddle.draw()
         ball.draw()
@@ -128,6 +159,10 @@ def main():
         font = pygame.font.SysFont("Arial", 30)
         score_text = font.render(f"Score: {score}", True, BLACK)
         screen.blit(score_text, (10, 10))
+
+        # Draw the level
+        level_text = font.render(f"Level: {level + 1}", True, BLACK)
+        screen.blit(level_text, (width - 150, 10))
 
         # Update the display
         pygame.display.update()
