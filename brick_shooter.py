@@ -14,6 +14,7 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+BLACK = (0, 0, 0)
 
 # Clock for controlling frame rate
 clock = pygame.time.Clock()
@@ -83,6 +84,8 @@ def main():
     ball = Ball()
     bricks = [Brick(x * 70 + 50, y * 40 + 50) for y in range(5) for x in range(10)]
 
+    score = 0 # Initialize
+
     running = True
     while running:
         screen.fill(WHITE)
@@ -113,12 +116,18 @@ def main():
             ball.y_speed = -ball.y_speed
         if ball_brick_collision(ball, bricks):
             ball.y_speed = -ball.y_speed
+            score += 10
 
         # Draw game objects
         paddle.draw()
         ball.draw()
         for brick in bricks:
             brick.draw()
+
+        # Draw the score
+        font = pygame.font.SysFont("Arial", 30)
+        score_text = font.render(f"Score: {score}", True, BLACK)
+        screen.blit(score_text, (10, 10))
 
         # Update the display
         pygame.display.update()
