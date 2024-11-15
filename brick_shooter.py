@@ -29,6 +29,10 @@ class Paddle:
         self.y = height - self.height - 10
         self.speed = 8
 
+    def reset_position(self):
+        self.x = (width - self.width) // 2
+        self.y = height - self.height - 10
+
     def move(self, dx):
         self.x += dx
         # Keep paddle within the screen
@@ -104,17 +108,11 @@ def create_level(level):
     spacing_y = 10
 
     start_x = (width - (cols * brick_width + (cols - 1) * spacing_x)) // 2
-    start_y = 10 # (height - (rows * brick_height + (rows - 1) * spacing_y)) // 2
-    print(width, cols, brick_width, cols-1, spacing_x)
-    print(height, cols, brick_height, cols-1, spacing_y)
-    print(":", start_x, start_y)
+    start_y = 50 # (height - (rows * brick_height + (rows - 1) * spacing_y)) // 2
 
-    print(width, cols * brick_width, (cols - 1) * spacing_x)
     centered_bricks = [
         Brick(start_x + x * (brick_width + spacing_x), start_y + y * (brick_height + spacing_y)) for x, y in brick_layout
     ]
-    for a in centered_bricks:
-        print(a.x, a.y) 
     return centered_bricks
 
     # return [Brick(x,y) for (x, y) in layouts[level % len(layouts)]]
@@ -127,7 +125,16 @@ def show_level_start(level):
     pygame.display.update()
     time.sleep(1) # Pause for 1 second
 
+def reset_game():
+    global ball, paddle, bricks, score, level
+    ball.reset_position() #= Ball(width // 2, height // 2)
+    paddle.reset_position() #= Paddle(width // 2 - 50, height - 30)
+    level = 0
+    score = 0
+    bricks = create_level(level)
+
 def main():
+    global paddle, ball, level, bricks, score, running
     paddle = Paddle()
     ball = Ball()
     level = 0
@@ -142,6 +149,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                reset_game()
 
         # Paddle movement (left and right)
         keys = pygame.key.get_pressed()
