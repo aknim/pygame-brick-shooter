@@ -86,13 +86,38 @@ def ball_brick_collision(ball, bricks):
 def create_level(level):
     layouts = [
         # Level 1: Simple 3x5 grid
-        [(x * 70 + 50, y * 40 + 50) for y in range(3) for x in range(5)],
+        [(x, y) for y in range(3) for x in range(5)],
         # Level 2: 4x6 grid
-        [(x * 70 + 50, y * 40 + 50) for y in range(4) for x in range(6)],
+        [(x, y) for y in range(4) for x in range(6)],
         # Level 3: 5x7 grid
-        [(x * 70 + 50, y * 40 + 50) for y in range(5) for x in range(7)]
+        [(x, y) for y in range(5) for x in range(7)]
     ]
-    return [Brick(x,y) for (x, y) in layouts[level % len(layouts)]]
+
+    brick_layout = layouts[level % len(layouts)]
+
+    # Center the bricks horizontally and vertically
+    rows = max([y for x, y in brick_layout]) + 1
+    cols = max([x for x, y in brick_layout]) + 1
+    brick_width = 60
+    brick_height = 30
+    spacing_x = 10
+    spacing_y = 10
+
+    start_x = (width - (cols * brick_width + (cols - 1) * spacing_x)) // 2
+    start_y = 10 # (height - (rows * brick_height + (rows - 1) * spacing_y)) // 2
+    print(width, cols, brick_width, cols-1, spacing_x)
+    print(height, cols, brick_height, cols-1, spacing_y)
+    print(":", start_x, start_y)
+
+    print(width, cols * brick_width, (cols - 1) * spacing_x)
+    centered_bricks = [
+        Brick(start_x + x * (brick_width + spacing_x), start_y + y * (brick_height + spacing_y)) for x, y in brick_layout
+    ]
+    for a in centered_bricks:
+        print(a.x, a.y) 
+    return centered_bricks
+
+    # return [Brick(x,y) for (x, y) in layouts[level % len(layouts)]]
 
 # Display level transition
 def show_level_start(level):
